@@ -10,6 +10,7 @@ import Swal from "sweetalert2";
 
 const MotorDetail = () => {
   const [motorData, setMotorData] = useState([]);
+  const [dataTable, setTable] = useState([]);
   const [motorInfo, setMotorInfo] = useState([]);
   const [error, setError] = useState(null);
   const { id } = useParams(); // Update the parameter name to 'id'
@@ -37,7 +38,6 @@ const MotorDetail = () => {
     }
   }, [id]); // Update the dependency to 'id'
 
-  
   async function getData(){
     try{
       const data = await getLastData(id);
@@ -54,71 +54,20 @@ const MotorDetail = () => {
       console.log(err);
     }
   }
-  // const getData = () => {
-  //   dispatch(getLastData({"motor_id": id})).unwrap()
-  //   .then((data) => {
-  //     console.log(data);
-  //     dispatch(addMotorDataById(data.data))
-  //     console.log(motorData);
-  //   })
-  //   .catch((err) => {
-  //     Swal.fire({
-  //       title: 'Getting Data Failed!',
-  //       text: 'Please try again later.',
-  //       icon: "error",
-  //       confirmButtonText: 'Okay'
-  //     });
-  //   })
-  // }
+
+  useEffect(() => {
+    const reversed = [...motorData].reverse();
+    setTable(reversed);
+  }, [motorData]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       getData();
       console.log("getData is working...");
-    }, 3000);
+    }, 2000);
     return () => clearInterval(interval);
   }, []);
   
-  // const getMotorData = async() => {
-    // console.log("getMotorData called");
-    // axios
-    //   .post(motorApi)
-    //   .then((response) => {
-    //     console.log("API Response:", response.data);
-    //     if (response.data && response.data.motor_owned) {
-    //       console.log("Motor Owned Array:", response.data.motor_owned);
-    //       const motor = response.data.motor_owned.find((motor) => motor.motor_id === id); // Update the comparison to 'id'
-    //       if (motor) {
-    //         console.log("Matching Motor:", motor);
-    //         if (motor.motor_details && motor.motor_details.sensors) {
-    //           console.log("Sensor Data:", motor.motor_details.sensors);
-    //           const sensorData = motor.motor_details.sensors;
-    //           setMotorData((prevData) => {
-    //             console.log("Previous Motor Data:", prevData);
-    //             console.log("Updated Motor Data:", sensorData);
-    //             return sensorData;
-    //           });
-    //         } else {
-    //           console.log("Motor details or sensors data not found");
-    //           setError("Motor details or sensors data not found");
-    //         }
-    //       } else {
-    //         console.log(`Motor with ID ${id} not found`); // Update the log to use 'id'
-    //         setError(`Motor with ID ${id} not found`); // Update the error message to use 'id'
-    //       }
-    //     } else {
-    //       console.log("User data not found or invalid response");
-    //       setError("User data not found or invalid response");
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     console.log("API Error:", err);
-    //     setError("An error occurred while fetching data");
-    //   });
-  // };
-
-  // console.log("Motor Data:", motorData);
-
   if (error) {
     return <p>Error: {error}</p>;
   }
@@ -158,7 +107,7 @@ const MotorDetail = () => {
           </tr>
         </thead>
         <tbody>
-          {motorData ? motorData.map((sensor, index) => (
+          {dataTable ? dataTable.map((sensor, index) => (
             <tr key={index}>
               <td>{sensor.temperature}</td>
               <td>{sensor.vibration}</td>
